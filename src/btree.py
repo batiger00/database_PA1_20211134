@@ -20,19 +20,19 @@ class BTree:
         self.split_count = 0
 
     def search(self, key: int, node: BTreeNode | None = None) -> int | None:
-        current = node or self.root
+        node = node or self.root
         index = 0
 
-        while index < len(current.keys) and key > current.keys[index]:
+        while index < len(node.keys) and key > node.keys[index]:
             index += 1
 
-        if index < len(current.keys) and key == current.keys[index]:
-            return current.rids[index]
+        if index < len(node.keys) and key == node.keys[index]:
+            return node.rids[index]
 
-        if current.is_leaf:
+        if node.is_leaf:
             return None
 
-        return self.search(key, current.children[index])
+        return self.search(key, node.children[index])
 
     def insert(self, key: int, rid: int) -> None:
         if self.search(key) is not None:

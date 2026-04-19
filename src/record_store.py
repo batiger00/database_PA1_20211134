@@ -13,20 +13,18 @@ class RecordStore:
         path = Path(csv_path)
         records: list[StudentRecord] = []
 
-        with path.open(newline="", encoding="utf-8") as csv_file:
-            reader = csv.DictReader(csv_file)
-
+        with path.open(newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
             for row in reader:
-                records.append(
-                    StudentRecord(
-                        student_id=int(row["Student ID"]),
-                        name=row["Name"],
-                        gender=row["Gender"],
-                        gpa=float(row["GPA"]),
-                        height=float(row["Height"]),
-                        weight=float(row["Weight"]),
-                    )
+                record = StudentRecord(
+                    student_id=int(row["Student ID"]),
+                    name=row["Name"],
+                    gender=row["Gender"],
+                    gpa=float(row["GPA"]),
+                    height=float(row["Height"]),
+                    weight=float(row["Weight"]),
                 )
+                records.append(record)
 
         return cls(records)
 
