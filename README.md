@@ -25,9 +25,12 @@ validation script, and benchmark experiments.
 ```text
 README.md
 student.csv
+src/main.py
 src/btree.py
 src/bplustree.py
 src/bstar_tree.py
+src/record_store.py
+src/student_record.py
 src/measure_time.py
 src/additional_experiments.py
 src/full_dataset_check.py
@@ -129,4 +132,3 @@ Additional experiments also support custom options:
 ```bash
 python3 src/additional_experiments.py --orders 3 5 10 --range-order 10 --trials 3 --range-trials 5
 ```
-
