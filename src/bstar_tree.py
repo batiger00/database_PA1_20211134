@@ -20,6 +20,7 @@ class BStarTree:
         self.split_count = 0
         self.redistribution_count = 0
         self.two_to_three_split_count = 0
+        self._needs_overfull_repair = False
 
     def search(self, key: int, node: BStarTreeNode | None = None) -> int | None:
         current = node or self.root
@@ -46,6 +47,9 @@ class BStarTree:
             self.root = new_root
 
         self._insert_non_full(self.root, key, rid)
+        if self._needs_overfull_repair:
+            self._repair_overfull_nodes()
+            self._needs_overfull_repair = False
 
     def delete(self, key: int) -> bool:
         if self.search(key) is None:
@@ -85,12 +89,6 @@ class BStarTree:
         self._insert_non_full(node.children[child_index], key, rid)
 
     def _prepare_child_for_insert(self, parent: BStarTreeNode, child_index: int) -> None:
-        child = parent.children[child_index]
-
-        if not child.is_leaf:
-            self._split_child(parent, child_index)
-            return
-
         if child_index < len(parent.children) - 1 and not self._is_full(parent.children[child_index + 1]):
             self._redistribute_to_right(parent, child_index)
             return
@@ -137,6 +135,33 @@ class BStarTree:
         parent.rids.insert(child_index, promoted_rid)
         parent.children.insert(child_index + 1, new_child)
         self.split_count += 1
+
+        if len(parent.keys) > (2 * self.order) - 1:
+            self._needs_overfull_repair = True
+
+    def _repair_overfull_nodes(self) -> None:
+        self._repair_overfull_children(self.root)
+
+        while len(self.root.keys) > (2 * self.order) - 1:
+            new_root = BStarTreeNode(is_leaf=False, children=[self.root])
+            self._split_child(new_root, 0)
+            self.root = new_root
+            self._repair_overfull_children(self.root)
+
+    def _repair_overfull_children(self, node: BStarTreeNode) -> None:
+        if node.is_leaf:
+            return
+
+        child_index = 0
+        while child_index < len(node.children):
+            child = node.children[child_index]
+            self._repair_overfull_children(child)
+
+            if len(child.keys) > (2 * self.order) - 1:
+                self._split_child(node, child_index)
+                continue
+
+            child_index += 1
 
     def _redistribute_to_right(self, parent: BStarTreeNode, child_index: int) -> None:
         child = parent.children[child_index]
@@ -247,6 +272,8 @@ class BStarTree:
         parent.children.insert(left_index + 1, new_child)
 
         self.two_to_three_split_count += 1
+        if len(parent.keys) > (2 * self.order) - 1:
+            self._needs_overfull_repair = True
 
     def _delete(self, node: BStarTreeNode, key: int) -> None:
         index = self._find_key(node, key)
@@ -386,4 +413,4 @@ class BStarTree:
         return index
 
     def _is_full(self, node: BStarTreeNode) -> bool:
-        return len(node.keys) == (2 * self.order) - 1
+        return len(node.keys) >= (2 * self.order) - 1
