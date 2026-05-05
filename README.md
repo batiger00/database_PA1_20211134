@@ -20,7 +20,7 @@ loading the CSV file into memory.
 Only the Python standard library is required to run the tree implementations,
 validation script, and benchmark experiments.
 
-## Files
+## Core files
 
 ```text
 README.md
