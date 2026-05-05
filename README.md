@@ -60,7 +60,7 @@ This builds all three trees using the full dataset and validates:
 - random point searches
 - B+ tree range query correctness
 - sample deletions
-- basic structural integrity after deletion
+- search checks after deletion
 
 ### 3. Main benchmark experiment
 
